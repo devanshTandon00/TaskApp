@@ -60,23 +60,32 @@ app.get('/users/:id', async (req,res) => {
 })
 
 app.patch('/users/:id', async (req, res) => {
-    const updates =
+    // returns an array of elements of req.body 
+    const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'email', 'password', 'age']
+    const isValid = updates.every((update) => allowedUpdates.includes(update))
+
+    if(!isValid){
+        return res.status(400).send({
+            "error": 'Invalid Updates!'
+        })
+    }
 
 
+    // check if there is no user since mongoDB is gonna consider it as a sucess so we need to handle that
     try{
         const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true})
 
         if(!user){
-            return res.status(400).send()
+            return res.status(404).send()
         }
 
+        // update old user and send modified user
         res.send(user)
     } catch(e){
         res.status(400).send(e)
     }
 })
-
 
 app.post('/tasks', async (req, res) => {
     const task = new Task(req.body)
@@ -111,6 +120,21 @@ app.get('/tasks/:id', async (req, res) => {
         res.status(500).send()
     }   
 })
+
+/**
+ * Challenge:
+ * Write HTTP patch request to update tasks by ID
+ * 
+ */
+
+app.patch('/tasks/:id', async (req, res) => {
+    try{
+        const task = Task.findByIdAndUpdate(req)
+    } catch(e){
+
+    }
+})
+
 
 app.listen(port, () => {
     console.log('Server is up and running on port ' + port)
