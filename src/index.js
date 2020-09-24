@@ -16,11 +16,11 @@ app.listen(port, () => {
   console.log("Server is up and running on port " + port);
 });
 
-const bycrpt = require("bycrptjs");
+const bycrpt = require("bcryptjs");
 
 const myFunction = async () => {
   const pass = "Red@123";
-  const hashed = await bycrpt.hashed(pass, 8);
+  const hashed = await bycrpt.hash(pass, 8);
 
   const isMatch = await bycrpt.compare(pass, hashed);
 };

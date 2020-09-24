@@ -1,45 +1,58 @@
-const mongoose = require('mongoose')
-const validator = require('validator')
+const mongoose = require("mongoose");
+const validator = require("validator");
+const bcrypt = require("bcryptjs");
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true,
+    validate(value) {
+      if (!validator.isEmail(value)) throw new Error("Invalid email");
+    },
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 7,
+    trim: true,
+    validate(value) {
+      if (value.toLowerCase().includes("password")) {
+        throw new Error('Cannot contain "password" ');
+      }
+    },
+  },
+  age: {
+    type: Number,
+    default: 0,
+    validate(value) {
+      if (value < 0) throw new Error("Age must be positive");
+    },
+  },
+});
+
+//we create a seperate schema to access middleware functions such as pre post for accessing state before/after
+// we cannot use arrow function in here, since we need to make use of 'this' keyword
+// the 'this' keyword will help us access the individual user
+
+userSchema.pre("save", async function (next) {
+  const user = this;
+
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+  next();
+});
 
 // created a user model
+// when we pass in a object in the model as a second arg, mongoose converts it to a schema in the backgroun
 
-// using validator module to validate email
-// use simple logic to validate if age >= 0
-const user = mongoose.model('user', {
-    name: {
-        type: String, 
-        required:true,
-        trim: true
-    },
-    email: {
-        type: String,    
-        required: true,
-        trim: true,
-        lowercase: true,
-        validate(value){
-            if(!validator.isEmail(value))
-                throw new Error("Invalid email")
-        }
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 7,
-        trim: true,
-        validate(value){
-            if(value.toLowerCase().includes('password')){
-                throw new Error('Cannot contain "password" ')
-            }
-        }
-    },
-    age: {
-        type: Number, 
-        default: 0,
-        validate(value){
-            if(value < 0)
-                throw new Error('Age must be positive')
-        }
-    }
-})
+const user = mongoose.model("user", userSchema);
 
-module.exports = user
+module.exports = user;
