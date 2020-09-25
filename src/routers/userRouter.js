@@ -13,6 +13,18 @@ router.post("/users", async (req, res) => {
   }
 });
 
+router.post("users/login", async (req, res) => {
+  try {
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    res.send(user);
+  } catch (e) {
+    res.status(400).send();
+  }
+});
+
 // two option of handling find
 // 1. use promise .then() .catch() structure
 // 2. use callback functions

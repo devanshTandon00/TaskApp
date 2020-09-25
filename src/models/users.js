@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    unique: true,
     required: true,
     trim: true,
     lowercase: true,
@@ -37,10 +38,24 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-//we create a seperate schema to access middleware functions such as pre post for accessing state before/after
+//create a method to facilitate secure login
+userSchema.statics.findbyCredentials = async (email, password) => {
+  const user = await User.findOne({ email: email });
+
+  if (!user) {
+    throw new Error("Unable to login");
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw new Error("Unable to login");
+
+  return user;
+};
+
+// we create a seperate schema to access middleware functions such as pre post for accessing state before/after
 // we cannot use arrow function in here, since we need to make use of 'this' keyword
 // the 'this' keyword will help us access the individual user
-
+// hash the plain text password before saving
 userSchema.pre("save", async function (next) {
   const user = this;
 
