@@ -16,13 +16,15 @@ app.listen(port, () => {
   console.log("Server is up and running on port " + port);
 });
 
-const bycrpt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
+// use sign and verify methods to create authentication tokens and make sure user is authenticated correctly
 const myFunction = async () => {
-  const pass = "Red@123";
-  const hashed = await bycrpt.hash(pass, 8);
+  const token = jwt.sign({ _id: "abcd0" }, "keepLearning");
+  console.log(token);
 
-  const isMatch = await bycrpt.compare(pass, hashed);
+  const data = jwt.verify(token, "keepLearning");
+  console.log(data);
 };
 
 myFunction();

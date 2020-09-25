@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -38,6 +39,14 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+// use with class instance, for example User user, so call method on user
+userSchema.methods.getAuthToken = async function () {
+  const user = this;
+  const token = jwt.sign({ _id: user._id.toString() }, "keepLearning");
+  return token;
+};
+
+// use with class, for example User.findByCredentials
 //create a method to facilitate secure login
 userSchema.statics.findbyCredentials = async (email, password) => {
   const user = await User.findOne({ email: email });
