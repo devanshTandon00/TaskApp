@@ -20,7 +20,9 @@ const jwt = require("jsonwebtoken");
 
 // use sign and verify methods to create authentication tokens and make sure user is authenticated correctly
 const myFunction = async () => {
-  const token = jwt.sign({ _id: "abcd0" }, "keepLearning");
+  const token = jwt.sign({ _id: "abcd0" }, "keepLearning", {
+    expiresIn: "7 days",
+  });
   console.log(token);
 
   const data = jwt.verify(token, "keepLearning");

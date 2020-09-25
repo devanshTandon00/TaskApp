@@ -37,12 +37,24 @@ const userSchema = new mongoose.Schema({
       if (value < 0) throw new Error("Age must be positive");
     },
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 // use with class instance, for example User user, so call method on user
 userSchema.methods.getAuthToken = async function () {
   const user = this;
   const token = jwt.sign({ _id: user._id.toString() }, "keepLearning");
+
+  // user.token = user.token.concat({ token: token });
+  // await user.save();
+
   return token;
 };
 
