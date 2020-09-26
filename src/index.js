@@ -6,14 +6,6 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-// app.use((req, res, next) => {
-//   if (req.method != "GET") next();
-// });
-
-app.use((req, res, next) => {
-  if (req.method) res.status(503).send("In maintainance mode!");
-});
-
 // returns middleware that only parses json
 app.use(express.json());
 
