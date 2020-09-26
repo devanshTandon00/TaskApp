@@ -51,6 +51,7 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+// creates token and adds it to token array
 userSchema.methods.getAuthToken = async function () {
   const user = this;
 
@@ -61,8 +62,6 @@ userSchema.methods.getAuthToken = async function () {
   await user.save();
 
   return token;
-
-  //verify token
 };
 
 userSchema.statics.findByCredentials = async (email, password) => {

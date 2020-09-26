@@ -2,17 +2,20 @@ const express = require("express");
 const User = require("../models/users");
 const router = new express.Router();
 
+// signup
 router.post("/users", async (req, res) => {
   const user = new User(req.body);
 
   try {
     await user.save();
-    res.status(201).send(user);
+    const token = await user.getAuthToken();
+    res.status(201).send({ user, token });
   } catch (e) {
     res.status(400).send(e);
   }
 });
 
+// login
 router.post("/users/login", async (req, res) => {
   try {
     const user = await User.findByCredentials(
